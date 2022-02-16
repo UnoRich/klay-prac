@@ -29,7 +29,10 @@ function App() {
 	getBalance('0xBF819d77fB435DEFC7a5340B084BA64Fe03E0078');
 	const onClickGetAddress = () => {
 		KlipAPI.getAddress(setQrvalue);
-		console.log(1111, qrvalue);
+		// console.log(1111, qrvalue);
+	}
+	const onClickSetCount = () => {
+		KlipAPI.setCount(2000, setQrvalue);
 	}
 
 
@@ -40,6 +43,7 @@ function App() {
 				<button title={'카운트 변경'} onClick={() => { setCount(100) }} />
 				{/* <button onClick={() => { onPressButton2('15', setBlance) }} > HI </button> */}
 				<button onClick={() => { onClickGetAddress() }} > 주소 가져오기 </button>
+				<button onClick={() => { onClickSetCount() }} > count 변경 </button>
 				<br />
 				<QRCode value={qrvalue}></QRCode>
 				<p>
