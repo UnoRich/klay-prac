@@ -53,7 +53,7 @@ export const setCount = (count, setQrvalue) => {
 }
 
 // get address of user wallet connected with QR
-export const getAddress = (setQrvalue) => {
+export const getAddress = (setQrvalue, callback) => {
     // address from docs.klaytnwallet app2app api
     axios.post(
         A2P_API_PREPARE_URL, {
@@ -73,6 +73,7 @@ export const getAddress = (setQrvalue) => {
             axios.get(`https://a2a-api.klipwallet.com/v2/a2a/result?request_key=${request_key}`).then((res) => {
                 if (res.data.result) {
                     console.log(`[result] ${JSON.stringify(res.data.result)}`);
+                    callback(res.data.result.klaytn_address);
                     clearInterval(timerId);
                 }
             })
