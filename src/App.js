@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import QRCode from "qrcode.react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHome, faWallet, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { fetchCardOf, getBalance } from './api/UseCaver';
 import * as KlipAPI from "./api/UseKlip";
 import "bootstrap/dist/css/bootstrap.min.css"
 import './App.css';
 import './market.css';
-import { Alert, Card, Container, Form, Nav, Button, Modal } from "react-bootstrap";
+import { Alert, Card, Container, Form, Nav, Button, Modal, Row, Col, CardGroup } from "react-bootstrap";
 import { MARKET_CONTRACT_ADDRESS } from "./constants/constants.cypress";
 
 // ABI (Application Binary Interface)
@@ -33,6 +35,7 @@ function App() {
 	// nft
 	const [nfts, setNfts] = useState([]); // tokenId, 
 	const [myBalance, setMyBalance] = useState("0");
+	// const [myAddress, setMyAddress] = useState(DEFAULT_ADDRESS);
 	const [myAddress, setMyAddress] = useState("0x075c4bC93c6019f70E2A89412C9c4A07c3419F49");
 
 
@@ -47,6 +50,7 @@ function App() {
 		onConfirm: () => {},
 	});
 
+	const rows = nfts.slice(nfts.length /2);
 	const fetchMarketNFTs = async () => {
 		const _nfts = await fetchCardOf(MARKET_CONTRACT_ADDRESS);
 		setNfts(_nfts);
@@ -73,10 +77,16 @@ function App() {
 	}
 	const onClickCard = (id) => {
 		if (tab === 'WALLET') {
-			onClickMyCard(id);
+			setModalPros({title: "NFT를 마켓에 올리시겠어요?", onConfirm: () => {
+				onClickMyCard(id);	
+			}})
+			setShowModal(true);
 		}
 		if (tab === 'MARKET') {
-			onClickMarketCard(id);
+			setModalPros({title: "NFT를 구매하시겠어요?", onConfirm: () => {
+				onClickMarketCard(id);	
+			}})
+			setShowModal(true);
 		}
 	}
 
@@ -125,7 +135,7 @@ function App() {
 						backgroundColor: "#f40075",
 						fontSize: 25
 					}}>
-					{myBalance}
+					{myAddress !== DEFAULT_ADDRESS ? `${myBalance} KLAY` : "지갑 연동하기"}
 				</Alert>
 				{qrvalue !== "DEFAULT" ? (
 				<Container style={{ backgroundColor: 'white', width: 300, height: 300, padding: 20 }}>
@@ -135,14 +145,40 @@ function App() {
 				{/* 갤러리(마켓, 내지갑)*/}
 				{tab === "MARKET" || tab === "WALLET" ? (
 					<div className="container" style={{ padding: 0, width: "100%" }}>
-					{nfts.map((nft, idx) => (
+					{console.log(333, rows)}	
+					{rows.map((nft, rowIndex) => (
+						<Row>
+							<Col style={{ marginRight:0, paddingRight:0 }}>
+								<Card onClick={() => {
+									onClickCard(nfts[rowIndex*2].id)
+								}}>
+									<Card.Img className="img-responsive" src={nfts[rowIndex*2].uri}/>
+								</Card>
+								[{nfts[rowIndex*2].id}]NFT
+							</Col>
+
+							<Col style={{ marginRight:0, paddingRight:0 }}>
+								{nfts.length > rowIndex * 2 + 1 ? (
+									<Card onClick={() => {
+										onClickCard(nfts[rowIndex*2+1].id)
+									}}>
+										<Card.Img className="img-responsive" src={nfts[rowIndex*2+1].uri}/>
+									</Card>
+								) : null }
+								{nfts.length > rowIndex * 2 + 1 ? (
+									<>[{nfts[rowIndex * 2 + 1].id}]NFT</>
+								) : null}
+							</Col>
+						</Row>
+					))}
+					{/* {nfts.map((nft, idx) => (
 						<Card.Img 
 							key={`imagekey${idx}`}
 							onClick={() => {
 							onClickCard(nft.id);
 						}} className="img-responsive" src={nfts[idx].uri} />
 					)
-					)}
+					)} */}
 				</div>
 				) : null}
 				{/* 발행 페이지*/}
@@ -177,6 +213,10 @@ function App() {
 
 				
 			</div>
+			<br/>
+			<br/>
+			<br/>
+			<br/>
 			{/* 모달 */}
 			<Modal
 			centered
@@ -214,7 +254,7 @@ function App() {
 						}}
 						className="row d-flex flex-column justify-content-center align-items-center"
 						>
-							<div> MARKET </div>
+							<div> <FontAwesomeIcon color="white" size="lg" icon={faHome}/> </div>
 						</div>
 					
 						<div onClick={()=> {
@@ -222,7 +262,7 @@ function App() {
 						}}
 						className="row d-flex flex-column justify-content-center align-items-center"
 						>
-							<div> MINT </div>
+							<div> <FontAwesomeIcon color="white" size="lg" icon={faPlus}/> </div>
 						</div>
 						<div onClick={()=> {
 							console.log(333);
@@ -231,7 +271,7 @@ function App() {
 						}}
 						className="row d-flex flex-column justify-content-center align-items-center"
 						>
-							<div> WALLET </div>
+							<div> <div> <FontAwesomeIcon color="white" size="lg" icon={faWallet}/> </div> </div>
 						</div>
 					</div>
 				</Nav>
